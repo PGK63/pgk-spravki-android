@@ -5,6 +5,7 @@ import androidx.lifecycle.viewModelScope
 import com.google.gson.Gson
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
+import org.json.JSONObject
 import ru.pgk.spravki.data.api.NetworkApi
 import ru.pgk.spravki.data.api.model.ErrorModel
 import ru.pgk.spravki.data.api.model.login.Login
@@ -27,6 +28,10 @@ class AuthViewModel @Inject constructor(
     ) {
         viewModelScope.launch {
             try {
+                if(name.isEmpty() || password.isEmpty()) {
+                    onError("Заполните все поля"); return@launch
+                }
+
                 val response = networkApi.login(
                     Login(
                         login = name,
@@ -34,7 +39,7 @@ class AuthViewModel @Inject constructor(
                     )
                 )
 
-                if(response.isSuccessful && response.body()?.accessToken != null){
+                if(response.isSuccessful){
 
                     val user = networkApi.getUserInfo(accessToken = "Bearer " + response.body()?.accessToken)
 
@@ -45,6 +50,9 @@ class AuthViewModel @Inject constructor(
                         userDataSource.saveLogin(name)
                         userDataSource.saveUserId(user.body()!!.id)
                         onSuccess()
+                    }else {
+                        val errorModel = Gson().fromJson<ErrorModel>(user.errorBody()!!.string())
+                        onError(errorModel.error ?: "Произошла ошибка")
                     }
                 }else {
                     val errorModel = Gson().fromJson<ErrorModel>(response.errorBody()!!.string())

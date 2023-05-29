@@ -59,7 +59,7 @@ class AuthInterceptor @Inject constructor(
                                     userDataSource.saveAccessToken(updatedToken)
                                 }
                             }
-                            HttpURLConnection.HTTP_INTERNAL_ERROR, HttpURLConnection.HTTP_UNAUTHORIZED, HttpURLConnection.HTTP_BAD_REQUEST -> {
+                            else -> {
 
                                 val signInResponse = authApi.get().login(
                                     Login(
@@ -77,9 +77,6 @@ class AuthInterceptor @Inject constructor(
 //                                }
 
                                 accessToken
-                            }
-                            else -> {
-                                null
                             }
                         }
                     }

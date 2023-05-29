@@ -4,6 +4,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.google.gson.Gson
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import retrofit2.Response
 import ru.pgk.spravki.data.api.NetworkApi
@@ -44,6 +45,7 @@ class MainViewModel @Inject constructor(
             }catch (e:Exception){
                 onError(e.message.toString())
             }finally {
+                delay(1000L)
                 onFinally()
             }
         }

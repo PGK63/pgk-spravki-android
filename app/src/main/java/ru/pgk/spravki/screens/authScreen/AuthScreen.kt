@@ -30,6 +30,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -93,11 +94,13 @@ fun AuthScreen(
                         text = errorMessage,
                         modifier = Modifier.padding(5.dp),
                         textAlign = TextAlign.Center,
-                        color = Color.Red
+                        color = Color.Red,
+                        fontWeight = FontWeight.W900
                     )
+                    Spacer(modifier = Modifier.height(25.dp))
+                }else {
+                    Spacer(modifier = Modifier.height(50.dp))
                 }
-
-                Spacer(modifier = Modifier.height(50.dp))
 
                 OutlinedTextField(
                     value = name,
