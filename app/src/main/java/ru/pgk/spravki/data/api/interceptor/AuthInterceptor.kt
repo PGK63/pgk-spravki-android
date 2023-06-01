@@ -1,5 +1,6 @@
 package ru.pgk.spravki.data.api.interceptor
 
+import com.google.gson.Gson
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.sync.Mutex
@@ -7,12 +8,15 @@ import kotlinx.coroutines.sync.withLock
 import okhttp3.Interceptor
 import okhttp3.Request
 import okhttp3.Response
+import org.json.JSONObject
 import ru.pgk.spravki.data.api.NetworkApi
 import ru.pgk.spravki.data.api.NetworkConstants.CUSTOM_HEADER
 import ru.pgk.spravki.data.api.NetworkConstants.NO_AUTH
+import ru.pgk.spravki.data.api.model.ErrorModel
 import ru.pgk.spravki.data.api.model.login.Login
 import ru.pgk.spravki.data.api.model.user.RefreshTokenBody
 import ru.pgk.spravki.data.database.UserDataSource
+import ru.pgk.spravki.utils.extensions.fromJson
 import java.net.HttpURLConnection
 import javax.inject.Inject
 import javax.inject.Provider
@@ -35,8 +39,15 @@ class AuthInterceptor @Inject constructor(
 
         val res = chain.proceedWithToken(req, token)
 
-        if ((res.code != HttpURLConnection.HTTP_UNAUTHORIZED && res.code != HttpURLConnection.HTTP_BAD_REQUEST) || token == null) {
+        if ((res.code != HttpURLConnection.HTTP_UNAUTHORIZED) || token == null) {
             return res
+        }
+
+        if(!res.isSuccessful && res.body != null) {
+            val errorModel = Gson().fromJson<ErrorModel>(res.body!!.string())
+
+            if(errorModel.code?.contains("errors_token") == false)
+                return res
         }
 
         val newToken: String? = runBlocking(Dispatchers.IO) {
