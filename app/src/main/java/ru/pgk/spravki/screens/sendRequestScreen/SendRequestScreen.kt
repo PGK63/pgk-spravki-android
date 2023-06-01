@@ -64,7 +64,11 @@ fun SendRequestScreen(
     var isLoading by remember { mutableStateOf(false) }
 
     LaunchedEffect(key1 = Unit, block = {
-        departmentTypes = viewModel.getDepartmentTypes()
+        try {
+            departmentTypes = viewModel.getDepartmentTypes()
+        }catch (e:Exception){
+            e.printStackTrace()
+        }
     })
 
     Surface(
