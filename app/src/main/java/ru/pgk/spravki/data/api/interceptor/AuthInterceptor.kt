@@ -46,7 +46,7 @@ class AuthInterceptor @Inject constructor(
         if(!res.isSuccessful && res.body != null) {
             val errorModel = Gson().fromJson<ErrorModel>(res.body!!.string())
 
-            if(errorModel.code?.contains("errors_token") == false)
+            if(errorModel.code?.startsWith("errors_token") == false)
                 return res
         }
 
