@@ -1,3 +1,4 @@
+
 package ru.pgk.spravki.data.api
 
 import io.ktor.client.HttpClient
@@ -13,10 +14,12 @@ import io.ktor.http.contentType
 import kotlinx.serialization.json.Json
 import retrofit2.Response
 import retrofit2.http.Body
+import retrofit2.http.DELETE
 import retrofit2.http.GET
 import retrofit2.http.Header
 import retrofit2.http.Headers
 import retrofit2.http.POST
+import retrofit2.http.Query
 import ru.pgk.spravki.data.api.NetworkConstants.CUSTOM_HEADER
 import ru.pgk.spravki.data.api.NetworkConstants.NO_AUTH
 import ru.pgk.spravki.data.api.model.ErrorModel
@@ -73,6 +76,12 @@ interface NetworkApi {
         @Header("Token") token: String = "6f065151-3bc8-434b-8271-d415feeb5f8f",
         @Body body: SendRequestBody
     ): Response<SendRequestResponse?>
+
+    @DELETE("/requests/cancel")
+    suspend fun deleteRequest(
+        @Query("requestId") requestId: Int,
+        @Header("Token") token: String = "6f065151-3bc8-434b-8271-d415feeb5f8f"
+    ): Response<Unit?>
 }
 
 private val json = Json { ignoreUnknownKeys = true }

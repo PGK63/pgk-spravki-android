@@ -1,5 +1,6 @@
 package ru.pgk.spravki.screens.userScreen
 
+import android.widget.Toast
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -25,6 +26,7 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
@@ -35,6 +37,7 @@ import ru.pgk.spravki.ui.theme.primaryBackgroundColor
 import ru.pgk.spravki.ui.theme.tintColor
 import ru.pgk.spravki.R
 import ru.pgk.spravki.data.api.model.request.Request
+import ru.pgk.spravki.data.api.model.request.RequestStatus
 import ru.pgk.spravki.screens.mainScreen.MainViewModel
 import ru.pgk.spravki.ui.theme.primaryTextColor
 import ru.pgk.spravki.ui.theme.secondaryBackgroundColor
@@ -45,6 +48,8 @@ fun UserScreen(
     navController: NavController,
     viewModel: MainViewModel
 ) {
+    val context = LocalContext.current
+
     val primaryTextColor = primaryTextColor()
     val primaryBackgroundColor = primaryBackgroundColor()
 
@@ -203,18 +208,34 @@ fun UserScreen(
 
                                 Spacer(modifier = Modifier.height(25.dp))
 
-                                Button(
-                                    modifier = Modifier
-                                        .padding(5.dp)
-                                        .widthIn(min = 250.dp)
-                                        .heightIn(min = 50.dp),
-                                    colors = ButtonDefaults.buttonColors(backgroundColor = tintColor),
-                                    shape = AbsoluteRoundedCornerShape(25.dp),
-                                    onClick = {
+                                if(request.status == RequestStatus.SEND){
+                                    Button(
+                                        modifier = Modifier
+                                            .padding(5.dp)
+                                            .widthIn(min = 250.dp)
+                                            .heightIn(min = 50.dp),
+                                        colors = ButtonDefaults.buttonColors(backgroundColor = tintColor),
+                                        shape = AbsoluteRoundedCornerShape(25.dp),
+                                        onClick = {
+                                            isLoading = true
 
+                                            viewModel.deleteRequest(
+                                                requestId = request.id,
+                                                onSuccess = {
+                                                    requests = viewModel.getRequests()
+                                                },
+                                                onError = {
+                                                    Toast.makeText(context, errorText, Toast.LENGTH_SHORT)
+                                                        .show()
+                                                },
+                                                onFinally = {
+                                                    isLoading = false
+                                                }
+                                            )
+                                        }
+                                    ) {
+                                        Text(text = "Отменить заявку", color = Color.White)
                                     }
-                                ) {
-                                    Text(text = "Отменить заявку", color = Color.White)
                                 }
                             }
                         }

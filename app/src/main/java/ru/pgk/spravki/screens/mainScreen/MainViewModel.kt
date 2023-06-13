@@ -27,6 +27,31 @@ class MainViewModel @Inject constructor(
 
     suspend fun getDepartmentTypes(): List<DepartmentType> = networkApi.getDepartmentTypes()
 
+    fun deleteRequest(
+        requestId: Int,
+        onSuccess: suspend () -> Unit,
+        onError: (String) -> Unit,
+        onFinally: () -> Unit
+    ) {
+        viewModelScope.launch {
+            try {
+                val response = networkApi.deleteRequest(requestId)
+
+                if(response.isSuccessful){
+                    onSuccess()
+                }else {
+                    val errorModel = Gson().fromJson<ErrorModel>(response.errorBody()!!.string())
+                    onError(errorModel.error ?: "Произошла ошибка")
+                }
+            }catch (e: Exception){
+                onError(e.message.toString())
+            }finally {
+                delay(1000L)
+                onFinally()
+            }
+        }
+    }
+
     fun sendRequest(
         body: SendRequestBody,
         onSuccess: () -> Unit,

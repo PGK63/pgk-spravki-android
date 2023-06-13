@@ -8,7 +8,6 @@ import kotlinx.coroutines.sync.withLock
 import okhttp3.Interceptor
 import okhttp3.Request
 import okhttp3.Response
-import org.json.JSONObject
 import ru.pgk.spravki.data.api.NetworkApi
 import ru.pgk.spravki.data.api.NetworkConstants.CUSTOM_HEADER
 import ru.pgk.spravki.data.api.NetworkConstants.NO_AUTH
@@ -46,7 +45,7 @@ class AuthInterceptor @Inject constructor(
         if(!res.isSuccessful && res.body != null) {
             val errorModel = Gson().fromJson<ErrorModel>(res.body!!.string())
 
-            if(errorModel.code?.startsWith("errors_token") == false)
+            if(errorModel.code?.startsWith("token") == false)
                 return res
         }
 
